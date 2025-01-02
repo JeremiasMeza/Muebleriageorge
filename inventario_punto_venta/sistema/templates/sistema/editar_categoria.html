@@ -1,0 +1,14 @@
+{% extends 'sistema/base.html' %}
+
+{% block content %}
+    <h1 class="mt-4">Editar Categoría</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="nombre">Nombre de la Categoría:</label>
+            <input type="text" id="nombre" name="nombre" class="form-control" value="{{ categoria.nombre }}" required>
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </form>
+{% endblock %}

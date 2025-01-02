@@ -1,0 +1,233 @@
+{% extends 'sistema/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Punto de Venta</h1>
+    
+    <div class="row mb-4">
+        <!-- Filtros -->
+<form method="GET" class="d-flex justify-content-between flex-wrap">
+    <!-- Buscar por nombre -->
+    <div class="mb-3">
+        <label for="nombre" class="form-label">Buscar por nombre</label>
+        <input 
+            type="text" 
+            id="nombre" 
+            name="nombre" 
+            class="form-control" 
+            placeholder="Nombre del producto" 
+            value="{{ request.GET.nombre|default:'' }}">
+    </div>
+    
+    <!-- Buscar por código de barra -->
+    <div class="mb-3">
+        <label for="codigo_barra" class="form-label">Código de barra</label>
+        <input 
+            type="text" 
+            id="codigo_barra" 
+            name="codigo_barra" 
+            class="form-control" 
+            placeholder="Código de barra" 
+            value="{{ request.GET.codigo_barra|default:'' }}">
+    </div>
+
+    <!-- Ordenar por precio -->
+    <div class="mb-3">
+        <label for="orden" class="form-label">Ordenar por precio</label>
+        <select id="orden" name="orden" class="form-select">
+            <option value="asc" {% if request.GET.orden == 'asc' %}selected{% endif %}>Menor a mayor</option>
+            <option value="desc" {% if request.GET.orden == 'desc' %}selected{% endif %}>Mayor a menor</option>
+        </select>
+    </div>
+    
+    <!-- Botón de filtro -->
+    <div class="d-flex align-items-end">
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </div>
+</form>
+
+
+    <div class="row">
+
+        <!-- Productos disponibles -->
+        <div class="col-lg-8">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for producto in productos %}
+                <div class="col">
+                    <div class="card h-100">
+                        {% if producto.imagen %}
+                            <img src="{{ producto.imagen.url }}" alt="Imagen de {{ producto.nombre }}" class="card-img-top">
+                        {% else %}
+                            <img src="/media/productos/defecto.jpg" class="card-img-top">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ producto.nombre }}</h5>
+                            <p class="card-text">Precio: ${{ producto.precio }}</p>
+                            <p class="card-text">Stock: {{ producto.cantidad }}</p>
+                            <button class="btn btn-primary btn-agregar" 
+                                    data-id="{{ producto.id }}" 
+                                    data-nombre="{{ producto.nombre }}" 
+                                    data-precio="{{ producto.precio }}" 
+                                    data-stock="{{ producto.cantidad }}">Agregar</button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Carrito flotante -->
+        <div class="col-lg-4">
+            <div class="sticky-top">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4>Carrito de Compras</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group mb-3" id="carrito">
+                            <!-- Los productos seleccionados aparecerán aquí -->
+                        </ul>
+                        <div class="d-flex justify-content-between">
+                            <strong>Total:</strong>
+                            <span id="total">$0</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <form id="form-punto-venta" method="POST">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="cliente" class="form-label">Nombre del Cliente</label>
+                                    <input type="text" id="cliente" name="cliente" class="form-control" placeholder="Ingrese el nombre del cliente" required>
+                                    <label for="rut" class="form-label">Rut</label>
+                                    <input type="text" id="rut" name="rut" class="form-control" placeholder="Ingrese el Rut del cliente" required>                            </div>
+                            <button type="submit" class="btn btn-success w-100">Finalizar Venta</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Variables para el carrito
+    const carrito = [];
+    const carritoList = document.getElementById('carrito');
+    const totalElement = document.getElementById('total');
+
+    // Agregar producto al carrito
+    document.querySelectorAll('.btn-agregar').forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.dataset.id;
+            const nombre = this.dataset.nombre;
+            const rut = this.dataset.rut;
+            const precio = parseFloat(this.dataset.precio);
+            const stock = parseInt(this.dataset.stock);
+
+            // Verifica si ya está en el carrito
+            const existe = carrito.find(item => item.id === id);
+            if (existe) {
+                // Si ya existe en el carrito, solo incrementa la cantidad
+                if (existe.cantidad < stock) {
+                    existe.cantidad++;
+                } else {
+                    alert(`No hay suficiente stock de ${nombre}`);
+                    return;
+                }
+            } else {
+                carrito.push({ id, nombre,rut, precio, cantidad: 1 });
+            }
+            renderCarrito();
+        });
+    });
+
+    // Renderizar el carrito
+    function renderCarrito() {
+        carritoList.innerHTML = '';
+        let total = 0;
+
+        carrito.forEach((item, index) => {
+            const subtotal = item.precio * item.cantidad;
+            total += subtotal;
+
+            const li = document.createElement('li');
+            li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+            li.innerHTML = `
+                <div>
+                    <strong>${item.nombre}</strong>
+                    <small class="d-block">Cantidad: 
+                        <input type="number" min="1" value="${item.cantidad}" data-index="${index}" class="input-cantidad form-control-sm w-50 d-inline">
+                    </small>
+                </div>
+                <div>
+                    <span>$${subtotal.toFixed(2)}</span>
+                    <button class="btn btn-danger btn-sm btn-eliminar" data-index="${index}">&times;</button>
+                </div>
+            `;
+            carritoList.appendChild(li);
+        });
+
+        totalElement.innerText = `$${total.toFixed(2)}`;
+    }
+
+    // Manejar cambios en las cantidades y eliminación
+    carritoList.addEventListener('input', function (e) {
+        if (e.target.classList.contains('input-cantidad')) {
+            const index = e.target.dataset.index;
+            const nuevaCantidad = parseInt(e.target.value);
+
+            // Validar que no se pida una cantidad mayor al stock disponible
+            const producto = carrito[index];
+            if (nuevaCantidad <= producto.stock) {
+                producto.cantidad = nuevaCantidad;
+                renderCarrito();
+            } else {
+                alert(`No hay suficiente stock de ${producto.nombre}`);
+                renderCarrito();
+            }
+        }
+    });
+
+    carritoList.addEventListener('click', function (e) {
+        if (e.target.classList.contains('btn-eliminar')) {
+            const index = e.target.dataset.index;
+            carrito.splice(index, 1);
+            renderCarrito();
+        }
+    });
+
+    // Enviar el carrito al servidor
+    document.getElementById('form-punto-venta').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const cliente = document.getElementById('cliente').value;
+
+        if (cliente.trim() === '') {
+            alert('El nombre del cliente es obligatorio');
+            return;
+        }
+
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ carrito, cliente })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Venta realizada con éxito!');
+                location.reload(); // Recargar la página
+            } else {
+                alert(data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Hubo un error al procesar la venta');
+        });
+    });
+</script>
+{% endblock %}

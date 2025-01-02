@@ -1,0 +1,85 @@
+{% extends 'sistema/base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12 text-center mb-4">
+                <h2>Bienvenido al Dashboard del Sistema</h2>
+                <p>Seleccione una opción para continuar:</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Reportes -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Reportes Generales</h5>
+                        <p class="card-text">Accede a los reportes de ventas, productos y más.</p>
+                        <!-- Aquí no se añade 'target="_blank"'. -->
+                        <a href="{% url 'reportes' %}" class="btn btn-primary">Ver Reportes</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ventas Mensuales -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Ventas</h5>
+                        <p class="card-text">Consulta las ventas</p>
+                        <!-- Aquí no se añade 'target="_blank"'. -->
+                        <a href="{% url 'ventas_graficos' %}" class="btn btn-success">Ver Ventas</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ventas Generales -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Ventas Generales</h5>
+                        <p class="card-text">Consulta las ventas totales del sistema.</p>
+                        <!-- Aquí no se añade 'target="_blank"'. -->
+                        <a href="{% url 'ventas_generales' %}" class="btn btn-warning">Ver Ventas Generales</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón de Volver al Menú Principal -->
+        <div class="row">
+            <div class="col-12 text-center">
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">Volver al Dashboard</a>
+            </div>
+        </div>
+
+        <!-- Ideas adicionales: Notificaciones y Acciones Rápidas -->
+        <div class="row mt-5">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Notificaciones</h5>
+                        <p class="card-text">Recibe notificaciones sobre ventas recientes o eventos importantes.</p>
+                        <!-- Podrías agregar una lista de notificaciones aquí -->
+                        <ul class="list-group">
+                            <li class="list-group-item">Nueva venta realizada: $500</li>
+                            <li class="list-group-item">Nuevo reporte disponible: Ventas de diciembre</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Acciones Rápidas</h5>
+                        <p class="card-text">Accede rápidamente a las acciones más frecuentes.</p>
+                        <a href="{% url 'punto_de_venta' %}" class="btn btn-info mb-2">Agregar Venta</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

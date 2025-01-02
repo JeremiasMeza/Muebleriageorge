@@ -1,0 +1,75 @@
+{% extends 'sistema/base.html' %}
+{% block content %}
+<div>
+    <button onclick="cargarGrafico('anio')">Actualizar</button>
+</div>
+
+<canvas id="ventasChart" width="400" height="200"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    let chartInstance = null;
+
+    function cargarGrafico(periodo) {
+        fetch(`/get_ventas_data/${periodo}/`)
+            .then(response => response.json())
+            .then(data => {
+                const ctx = document.getElementById('ventasChart').getContext('2d');
+
+                // Si ya existe un gráfico, destrúyelo antes de crear uno nuevo
+                if (chartInstance) {
+                    chartInstance.destroy();
+                }
+
+                // Crear el gráfico de barras
+                chartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,  // Los meses
+                        datasets: [{
+                            label: 'Ventas por mes',
+                            data: data.values,  // Las ventas por mes
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)', 
+                            borderColor: 'rgba(75, 192, 192, 1)', 
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return `Ventas: $${tooltipItem.raw}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Meses'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Ventas ($)'
+                                },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error al cargar los datos del gráfico:', error);
+            });
+    }
+
+    // Cargar el gráfico por defecto (por ejemplo, por año)
+    cargarGrafico('anio');
+</script>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'sistema/base.html' %}
+
+{% block content %}
+    <h1 class="mt-4">Inventario de Productos</h1>
+    <a href="{% url 'agregar_producto' %}" class="btn btn-primary mb-4">Agregar Producto</a>
+
+    <form method="get" class="mb-4">
+        <div class="row">
+            <!-- Campo de búsqueda por nombre o descripción -->
+            <div class="col-md-3">
+                <input type="text" name="buscar" class="form-control" placeholder="Buscar por nombre o descripción" value="{{ request.GET.buscar }}">
+            </div>
+            
+            <!-- Campo de búsqueda por código de barra -->
+            <div class="col-md-3">
+                <input type="text" name="codigo_barra" class="form-control" placeholder="Buscar por código de barra" value="{{ request.GET.codigo_barra }}">
+            </div>
+            
+            <!-- Filtro por cantidad -->
+            <div class="col-md-3">
+                <select name="filtro" class="form-control">
+                    <option value="">-- Filtrar por cantidad --</option>
+                    <option value="disponible" {% if request.GET.filtro == "disponible" %}selected{% endif %}>Disponible</option>
+                    <option value="agotado" {% if request.GET.filtro == "agotado" %}selected{% endif %}>Agotado</option>
+                </select>
+            </div>
+            
+            <!-- Ordenar por precio -->
+            <div class="col-md-3">
+                <select name="orden" class="form-control">
+                    <option value="">-- Ordenar por precio --</option>
+                    <option value="asc" {% if request.GET.orden == "asc" %}selected{% endif %}>Precio: Menor a Mayor</option>
+                    <option value="desc" {% if request.GET.orden == "desc" %}selected{% endif %}>Precio: Mayor a Menor</option>
+                </select>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary w-100">Buscar/Filtrar</button>
+            </div>
+        </div>
+    </form>
+    
+    
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>imagen</th>
+                <th>Nombre</th>
+                <th>Código de Barra</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Cantidad</th>
+                <th>Categoría</th>
+                <th>Acciones</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+                <tr>
+                    <td>
+                        {% if producto.imagen %}
+                            <img src="{{ producto.imagen.url }}" alt="Imagen de {{ producto.nombre }}" style="max-width: 100px;">
+                        {% else %}
+                            <img src="/media/productos/defecto.jpg" style="max-width: 100px;">
+                        {% endif %}
+                    </td>
+                    <td>{{ producto.nombre }}</td>
+                    <td>{{ producto.codigo_barra }}</td>
+                    <td>{{ producto.descripcion }}</td>
+                    <td>${{ producto.precio }}</td>
+                    <td>{{ producto.cantidad }}</td>
+                    <td>{{ producto.categoria.nombre|default:"Sin categoría" }}</td>
+                    <td>
+                        <a href="{% url 'editar_producto' producto.id %}" class="btn btn-warning btn-sm">Editar</a>
+                        <form method="post" action="{% url 'eliminar_producto' producto.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este producto?');">Eliminar</button>
+                        </form>
+                    </td>
+                    
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

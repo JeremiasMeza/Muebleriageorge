@@ -1,0 +1,43 @@
+{% extends 'sistema/base.html' %}
+
+{% block content %}
+    <h1 class="mt-4">Agregar Producto</h1>
+    
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" required>
+        </div>
+        <div class="mb-3">
+            <label for="codigo_barra" class="form-label">Código de Barra</label>
+            <input type="text" class="form-control" id="codigo_barra" name="codigo_barra" required>
+        </div>
+        <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción</label>
+            <textarea class="form-control" id="descripcion" name="descripcion"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="precio" class="form-label">Precio</label>
+            <input type="number" class="form-control" id="precio" name="precio" step="0.01" required>
+        </div>
+        <div class="mb-3">
+            <label for="cantidad" class="form-label">Cantidad</label>
+            <input type="number" class="form-control" id="cantidad" name="cantidad" required>
+        </div>
+        <div class="form-group">
+            <label for="categoria">Categoría</label>
+            <select name="categoria" class="form-control">
+                <option value="">-- Seleccionar Categoría --</option>
+                {% for categoria in categorias %}
+                    <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="imagen" class="form-label">Imagen del Producto</label>
+            <input type="file" class="form-control" id="imagen" name="imagen">
+        </div>
+        <button type="submit" class="btn btn-success">Guardar Producto</button>
+    </form>
+{% endblock %}

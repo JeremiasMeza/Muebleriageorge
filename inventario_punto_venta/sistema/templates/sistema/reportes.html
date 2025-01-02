@@ -1,0 +1,16 @@
+{% extends 'sistema/base.html' %}<table>
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Total Vendido</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for producto in productos %}
+            <tr>
+                <td>{{ producto.nombre }}</td>
+                <td>{{ producto.total_ventas }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

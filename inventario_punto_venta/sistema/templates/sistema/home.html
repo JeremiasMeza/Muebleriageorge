@@ -1,0 +1,55 @@
+{% extends 'sistema/base.html' %}
+
+{% block content %}
+    <!-- Sección de Métricas Clave -->
+    <section class="container mt-5">
+        <div class="row text-center">
+            <!-- Total de Ventas -->
+            <div class="col-md-4">
+                <div class="card shadow-lg p-4 mb-4 bg-dark text-white rounded-3" style="min-height: 220px;">
+                    <i class="fas fa-dollar-sign fa-3x mb-3"></i>
+                    <h4>Total Ventas</h4>
+                    <h3>{{ total_ventas }}</h3>  <!-- Asegúrate de que 'total_ventas' sea la variable pasada en el contexto -->
+                    <p class="lead">Ventas totales de este mes</p>
+                </div>
+            </div>
+            <!-- Productos Más Vendidos -->
+            <div class="col-md-4">
+                <div class="card shadow-lg p-4 mb-4 bg-dark text-white rounded-3" style="min-height: 220px;">
+                    <i class="fas fa-chart-bar fa-3x mb-3"></i>
+                    <h4>Productos Más Vendidos</h4>
+                    <h3>3,400</h3>
+                    <p class="lead">Unidades vendidas en total</p>
+                </div>
+            </div>
+            <!-- Alertas de Bajo Stock -->
+            <div class="col-md-4">
+                <div class="card shadow-lg p-4 mb-4 bg-danger text-white rounded-3" style="min-height: 220px;">
+                    <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+                    <h4>Bajo Stock</h4>
+                    <h3>5 productos</h3>
+                    <p class="lead">¡Alerta! Productos que están por agotarse.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Renderizado de objetos 3D -->
+
+        <h1 style="text-align: center; font-size: 2.5em; margin: 20px auto; color: #333; font-family: Arial, sans-serif;">
+            Renderizado 3D
+        </h1>
+        
+        <iframe 
+            src="https://3dwarehouse.sketchup.com/embed/ce55bf63-5088-47f5-b3e4-53ffe8b6871d?token=-i9lg7foMJw=&binaryName=s21" 
+            frameborder="0" 
+            scrolling="no" 
+            marginheight="0" 
+            marginwidth="0" 
+            allowfullscreen 
+            style="display: block; margin: 50px auto; width: 800px; height: 450px; border: 2px solid #ccc; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+        </iframe>
+
+    </section>
+    
+
+{% endblock %}
